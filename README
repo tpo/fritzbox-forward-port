@@ -1,0 +1,17 @@
+usage: fritzbox-forward-port (ENABLE|DISABLE) DESTINATION_IP PORT [COMMENT]
+       fritzbox-forward-port --help
+
+    This script will enable/disable port $PORT forwarding on
+    a FRITZ!Box to the $DESTINATION_IP
+
+     You can set the following variables directly in the
+     script, or in `~/.fritzbox.conf` :
+
+         FB=fritz.box
+         FB_USER=fritz1234
+         FB_PASS=password
+         FB_CERT=~/.fritzbox.pem
+
+     FB_CERT can be left empty but then the https
+     connection will NOT be authenticated
+
