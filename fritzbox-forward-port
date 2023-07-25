@@ -61,6 +61,12 @@ fi
 # * TR-064 - WAN IP Connection API docu from AVM:
 #   https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wanipconnSCPD.pdf
 #
+# * TR-064 standards by the standartization body:
+#   https://wiki.broadband-forum.org/display/RESOURCES/Broadband+Forum+Published+Resources#tf-filters=%7B%22selectfilters%22%3A%5B%5D%2C%22userfilters%22%3A%5B%22Number%22%5D%2C%22numberfilters%22%3A%5B%5D%2C%22datefilters%22%3A%5B%5D%2C%22globalfilter%22%3Atrue%2C%22columnhider%22%3Afalse%2C%22iconfilters%22%3A%5B%5D%2C%22defaults%22%3A%5B%22TR-064%22%2C%22%22%5D%2C%22width%22%3A%5B%22150%22%2C%22150%22%5D%2C%22inverse%22%3A%5Bfalse%2Cfalse%5D%2C%22order%22%3A%5B0%2C1%5D%2C%22ddSeparator%22%3A%5B%5D%2C%22ddOperator%22%3A%5B%5D%2C%22sorts%22%3A%5B%22Date%20%E2%87%A9%22%5D%7D
+#
+# * Definitions that the TR-064 standard uses (by the UPNP standartization body):
+#   http://www.upnp.org/specs/gw/UPnP-gw-WANPPPConnection-v1-Service.pdf
+#
 # * Schnittstellen und Protokolle rund um FritzBox:
 #   https://avm.de/service/schnittstellen/
 #
