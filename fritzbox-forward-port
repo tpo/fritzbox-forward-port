@@ -96,32 +96,61 @@ fritzbox_forward_port() {
   local port="$3"
   local comment="$4"
 
+  local command
+  local output
+  local exit_code
+
   if [ "$comment" == "" ]; then
     comment="Port $port to $destination_ip"
   fi
 
-  echo comment: "_${comment}_"
-
-  curl $USE_CERT --anyauth -u $FB_USER:$FB_PASS \
-       'https://'$FB':49443/upnp/control/wanipconnection1' \
-	   -H 'Content-Type: text/xml; charset="utf-8"' \
-	   -H 'SoapAction: urn:dslforum-org:service:WANIPConnection:1#AddPortMapping' \
-	   -d '
-<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  command=$( echo \
+    "curl $USE_CERT --anyauth -u $FB_USER:$FB_PASS --silent" \
+        "https://$FB:49443/upnp/control/wanipconnection1" \
+           "-H 'Content-Type: text/xml; charset=\"utf-8\"'" \
+           "-H 'SoapAction: urn:dslforum-org:service:WANIPConnection:1#AddPortMapping'" \
+           "-d '
+<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
   <s:Body>
-    <u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">
+    <u:AddPortMapping xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\">
       <NewRemoteHost></NewRemoteHost>
-      <NewExternalPort>'"$port"'</NewExternalPort>
+      <NewExternalPort>$port</NewExternalPort>
       <NewProtocol>TCP</NewProtocol>
-      <NewInternalPort>'"$port"'</NewInternalPort>
-      <NewInternalClient>'"$destination_ip"'</NewInternalClient>
-      <NewEnabled>'"$enable_or_disable"'</NewEnabled>
-      <NewPortMappingDescription>'"$comment"'</NewPortMappingDescription>
+      <NewInternalPort>$port</NewInternalPort>
+      <NewInternalClient>'$destination_ip'</NewInternalClient>
+      <NewEnabled>$enable_or_disable</NewEnabled>
+      <NewPortMappingDescription>$comment</NewPortMappingDescription>
       <NewLeaseDuration>0</NewLeaseDuration>
     </u:AddPortMapping>
   </s:Body>
-</s:Envelope>'
+</s:Envelope>'"
+  )
+  output=$( eval "$command" )
+  exit_code=$?
 
+  if echo "$output" | grep -q errorCode || \
+     [ "$exit_code" != "0" ] ; then
+    echo "There was an error while executing the following command:"
+    echo
+    echo "$command"
+    echo
+    echo "The output was:"
+    echo
+    echo "$output"
+    echo
+    echo "And the exit code was:"
+    echo
+    echo "$exit_code"
+    echo
+
+    if [ "$exit_code" != "0" ] ; then
+      return $exit_code
+    else
+      return 1
+    fi
+  else
+    return 0
+  fi
 }
 
 [ "$1" == "--help" ] && help
@@ -160,23 +189,6 @@ fi
 comment="$4"
 
 if fritzbox_forward_port "$enable_or_disable" "$destination_ip" "$port" "$comment"; then
-  status=0
-else
-  (
-    echo
-    echo "It *seems* that the fritz box keeps on changing its own"
-    echo "certificate. If that would be the case, then you could"
-    echo "try to:"
-    echo
-    echo "    openssl s_client -connect fritz.box:49443 -showcerts </dev/null | openssl x509 -outform pem > /root/.fritzbox.pem"
-    echo
-    echo "and then rerun this script"
-    echo
-  ) >&2
-  status=1
-fi
-
-if [ "$status" == "0" ]; then
   echo "success :-)"
   exit 0
 else
